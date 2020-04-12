@@ -342,9 +342,9 @@
  * off (or reduces to idle speed) shortly after drivers are turned off.
  *
  */
-//#define USE_CONTROLLER_FAN
+//#define USE_CONTROLLER_FAN // KS_Tweak
 #if ENABLED(USE_CONTROLLER_FAN)
-  //#define CONTROLLER_FAN_PIN -1        // Set a custom pin for the controller fan
+  //#define CONTROLLER_FAN_PIN RAMPS_D9_PIN // KS_Tweak        // Set a custom pin for the controller fan
   //#define CONTROLLER_FAN_USE_Z_ONLY    // With this option only the Z axis is considered
   #define CONTROLLERFAN_SPEED_MIN      0 // (0-255) Minimum speed. (If set below this value the fan is turned off.)
   #define CONTROLLERFAN_SPEED_ACTIVE 255 // (0-255) Active speed, used when any motor is enabled
@@ -447,14 +447,14 @@
 /**
  * M355 Case Light on-off / brightness
  */
-//#define CASE_LIGHT_ENABLE
+#define CASE_LIGHT_ENABLE // KS_Tweak
 #if ENABLED(CASE_LIGHT_ENABLE)
-  //#define CASE_LIGHT_PIN 4                  // Override the default pin if needed
+  #define CASE_LIGHT_PIN RAMPS_D10_PIN // KS_Tweak             // Override the default pin if needed
   #define INVERT_CASE_LIGHT false             // Set true if Case Light is ON when pin is LOW
   #define CASE_LIGHT_DEFAULT_ON true          // Set default power-up state on
   #define CASE_LIGHT_DEFAULT_BRIGHTNESS 105   // Set default power-up brightness (0-255, requires PWM pin)
   //#define CASE_LIGHT_MAX_PWM 128            // Limit pwm
-  //#define CASE_LIGHT_MENU                   // Add Case Light options to the LCD menu
+  #define CASE_LIGHT_MENU // KS_Tweak                   // Add Case Light options to the LCD menu
   //#define CASE_LIGHT_NO_BRIGHTNESS          // Disable brightness control. Enable for non-PWM lighting.
   //#define CASE_LIGHT_USE_NEOPIXEL           // Use Neopixel LED as case light, requires NEOPIXEL_LED.
   #if ENABLED(CASE_LIGHT_USE_NEOPIXEL)
@@ -950,8 +950,8 @@
 // Change values more rapidly when the encoder is rotated faster
 #define ENCODER_RATE_MULTIPLIER
 #if ENABLED(ENCODER_RATE_MULTIPLIER)
-  #define ENCODER_10X_STEPS_PER_SEC   30  // (steps/s) Encoder rate for 10x speed
-  #define ENCODER_100X_STEPS_PER_SEC  80  // (steps/s) Encoder rate for 100x speed
+  #define ENCODER_10X_STEPS_PER_SEC   2 // KS_Tweak  // (steps/s) Encoder rate for 10x speed
+  #define ENCODER_100X_STEPS_PER_SEC  4 // KS_Tweak  // (steps/s) Encoder rate for 100x speed
 #endif
 
 // Play a beep when the feedrate is changed from the Status Screen
@@ -995,7 +995,7 @@
 //#define STATUS_MESSAGE_SCROLLING
 
 // On the Info Screen, display XY with one decimal place when possible
-//#define LCD_DECIMAL_SMALL_XY
+#define LCD_DECIMAL_SMALL_XY // KS_Tweak
 
 // The timeout (in ms) to return to the status screen from sub-menus
 //#define LCD_TIMEOUT_TO_STATUS 15000
@@ -1236,7 +1236,7 @@
   #define XYZ_HOLLOW_FRAME
 
   // Enable to save many cycles by drawing a hollow frame on Menu Screens
-  #define MENU_HOLLOW_FRAME
+  // #define MENU_HOLLOW_FRAME // KS_Tweak
 
   // A bigger font is available for edit items. Costs 3120 bytes of PROGMEM.
   // Western only. Not available for Cyrillic, Kana, Turkish, Greek, or Chinese.
@@ -1244,7 +1244,7 @@
 
   // A smaller font may be used on the Info Screen. Costs 2300 bytes of PROGMEM.
   // Western only. Not available for Cyrillic, Kana, Turkish, Greek, or Chinese.
-  //#define USE_SMALL_INFOFONT
+  #define USE_SMALL_INFOFONT // KS_Tweak
 
   // Swap the CW/CCW indicators in the graphics overlay
   //#define OVERLAY_GFX_REVERSE
@@ -1279,14 +1279,14 @@
    */
   //#define STATUS_COMBINE_HEATERS    // Use combined heater images instead of separate ones
   //#define STATUS_HOTEND_NUMBERLESS  // Use plain hotend icons instead of numbered ones (with 2+ hotends)
-  #define STATUS_HOTEND_INVERTED      // Show solid nozzle bitmaps when heating (Requires STATUS_HOTEND_ANIM)
-  #define STATUS_HOTEND_ANIM          // Use a second bitmap to indicate hotend heating
-  #define STATUS_BED_ANIM             // Use a second bitmap to indicate bed heating
-  #define STATUS_CHAMBER_ANIM         // Use a second bitmap to indicate chamber heating
-  //#define STATUS_CUTTER_ANIM        // Use a second bitmap to indicate spindle / laser active
+  // #define STATUS_HOTEND_INVERTED // KS_Tweak      // Show solid nozzle bitmaps when heating (Requires STATUS_HOTEND_ANIM)
+  // #define STATUS_HOTEND_ANIM // KS_Tweak          // Use a second bitmap to indicate hotend heating
+  // #define STATUS_BED_ANIM // KS_Tweak             // Use a second bitmap to indicate bed heating
+  // #define STATUS_CHAMBER_ANIM // KS_Tweak         // Use a second bitmap to indicate chamber heating
+  #define STATUS_CUTTER_ANIM // KS_Tweak        // Use a second bitmap to indicate spindle / laser active
   //#define STATUS_ALT_BED_BITMAP     // Use the alternative bed bitmap
   //#define STATUS_ALT_FAN_BITMAP     // Use the alternative fan bitmap
-  //#define STATUS_FAN_FRAMES 3       // :[0,1,2,3,4] Number of fan animation frames
+  #define STATUS_FAN_FRAMES 3 // KS_Tweak       // :[0,1,2,3,4] Number of fan animation frames
   //#define STATUS_HEAT_PERCENT       // Show heating in a progress bar
   //#define BOOT_MARLIN_LOGO_SMALL    // Show a smaller Marlin logo on the Boot Screen (saving 399 bytes of flash)
   //#define BOOT_MARLIN_LOGO_ANIMATED // Animated Marlin logo. Costs ~‭3260 (or ~940) bytes of PROGMEM.
@@ -1636,8 +1636,8 @@
   #define MIN_ARC_SEGMENTS       24 // Minimum number of segments in a complete circle
   //#define ARC_SEGMENTS_PER_SEC 50 // Use feedrate to choose segment length (with MM_PER_ARC_SEGMENT as the minimum)
   #define N_ARC_CORRECTION       25 // Number of interpolated segments between corrections
-  //#define ARC_P_CIRCLES           // Enable the 'P' parameter to specify complete circles
-  //#define CNC_WORKSPACE_PLANES    // Allow G2/G3 to operate in XY, ZX, or YZ planes
+  #define ARC_P_CIRCLES // KS_Tweak           // Enable the 'P' parameter to specify complete circles
+  #define CNC_WORKSPACE_PLANES // KS_Tweak    // Allow G2/G3 to operate in XY, ZX, or YZ planes
 #endif
 
 // Support for G5 with XYZE destination and IJPQ offsets. Requires ~2666 bytes.
@@ -2656,12 +2656,12 @@
  *
  * See http://marlinfw.org/docs/configuration/laser_spindle.html for more config details.
  */
-//#define SPINDLE_FEATURE
+#define SPINDLE_FEATURE // KS_Tweak
 //#define LASER_FEATURE
 #if EITHER(SPINDLE_FEATURE, LASER_FEATURE)
   #define SPINDLE_LASER_ACTIVE_HIGH     false  // Set to "true" if the on/off function is active HIGH
   #define SPINDLE_LASER_PWM             true   // Set to "true" if your controller supports setting the speed/power
-  #define SPINDLE_LASER_PWM_INVERT      true   // Set to "true" if the speed/power goes up when you want it to go slower
+  #define SPINDLE_LASER_PWM_INVERT      false // KS_Tweak   // Set to "true" if the speed/power goes up when you want it to go slower
   #define SPINDLE_LASER_POWERUP_DELAY   5000   // (ms) Delay to allow the spindle/laser to come up to speed/power
   #define SPINDLE_LASER_POWERDOWN_DELAY 5000   // (ms) Delay to allow the spindle to stop
 
@@ -2680,7 +2680,7 @@
      */
     #define SPEED_POWER_SLOPE    118.4
     #define SPEED_POWER_INTERCEPT  0
-    #define SPEED_POWER_MIN     5000
+    #define SPEED_POWER_MIN     500 // KS_Tweak
     #define SPEED_POWER_MAX    30000    // SuperPID router controller 0 - 30,000 RPM
   #else
     #define SPEED_POWER_SLOPE      0.3922
@@ -2697,9 +2697,10 @@
  *
  * Note: COOLANT_MIST_PIN and/or COOLANT_FLOOD_PIN must also be defined.
  */
-//#define COOLANT_CONTROL
+#define COOLANT_CONTROL // KS_Tweak
 #if ENABLED(COOLANT_CONTROL)
-  #define COOLANT_MIST                // Enable if mist coolant is present
+  //#define COOLANT_MIST // KS_Tweak                // Enable if mist coolant is present
+  #define COOLANT_FLOOD_PIN RAMPS_D8_PIN
   #define COOLANT_FLOOD               // Enable if flood coolant is present
   #define COOLANT_MIST_INVERT  false  // Set "true" if the on/off function is reversed
   #define COOLANT_FLOOD_INVERT false  // Set "true" if the on/off function is reversed
@@ -2749,7 +2750,7 @@
 /**
  * Auto-report temperatures with M155 S<seconds>
  */
-#define AUTO_REPORT_TEMPERATURES
+//#define AUTO_REPORT_TEMPERATURES // KS_Tweak
 
 /**
  * Include capabilities in M115 output
