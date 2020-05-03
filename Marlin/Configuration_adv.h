@@ -450,9 +450,9 @@
 #define CASE_LIGHT_ENABLE // KS_Tweak
 #if ENABLED(CASE_LIGHT_ENABLE)
   #define CASE_LIGHT_PIN RAMPS_D10_PIN // KS_Tweak             // Override the default pin if needed
-  #define INVERT_CASE_LIGHT false             // Set true if Case Light is ON when pin is LOW
+  #define INVERT_CASE_LIGHT true // KS_Tweak             // Set true if Case Light is ON when pin is LOW
   #define CASE_LIGHT_DEFAULT_ON true          // Set default power-up state on
-  #define CASE_LIGHT_DEFAULT_BRIGHTNESS 105   // Set default power-up brightness (0-255, requires PWM pin)
+  #define CASE_LIGHT_DEFAULT_BRIGHTNESS 255   // Set default power-up brightness (0-255, requires PWM pin)
   //#define CASE_LIGHT_MAX_PWM 128            // Limit pwm
   #define CASE_LIGHT_MENU // KS_Tweak                   // Add Case Light options to the LCD menu
   //#define CASE_LIGHT_NO_BRIGHTNESS          // Disable brightness control. Enable for non-PWM lighting.
@@ -2659,7 +2659,7 @@
 #define SPINDLE_FEATURE // KS_Tweak
 //#define LASER_FEATURE
 #if EITHER(SPINDLE_FEATURE, LASER_FEATURE)
-  #define SPINDLE_LASER_ACTIVE_HIGH     false  // Set to "true" if the on/off function is active HIGH
+  #define SPINDLE_LASER_ACTIVE_HIGH     true // KS_Tweak  // Set to "true" if the on/off function is active HIGH
   #define SPINDLE_LASER_PWM             true   // Set to "true" if your controller supports setting the speed/power
   #define SPINDLE_LASER_PWM_INVERT      false // KS_Tweak   // Set to "true" if the speed/power goes up when you want it to go slower
   #define SPINDLE_LASER_POWERUP_DELAY   5000   // (ms) Delay to allow the spindle/laser to come up to speed/power
@@ -2699,8 +2699,11 @@
  */
 #define COOLANT_CONTROL // KS_Tweak
 #if ENABLED(COOLANT_CONTROL)
-  //#define COOLANT_MIST // KS_Tweak                // Enable if mist coolant is present
-  #define COOLANT_FLOOD_PIN RAMPS_D8_PIN
+  #define RAMPS_D57_PIN 57 // KS_Tweak
+  #define RAMPS_D58_PIN 58 // KS_Tweak
+  #define COOLANT_MIST_PIN RAMPS_D57_PIN // KS_Tweak
+  #define COOLANT_MIST // KS_Tweak                // Enable if mist coolant is present
+  #define COOLANT_FLOOD_PIN RAMPS_D58_PIN // KS_Tweak
   #define COOLANT_FLOOD               // Enable if flood coolant is present
   #define COOLANT_MIST_INVERT  false  // Set "true" if the on/off function is reversed
   #define COOLANT_FLOOD_INVERT false  // Set "true" if the on/off function is reversed
