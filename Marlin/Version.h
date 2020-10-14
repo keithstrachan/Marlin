@@ -28,7 +28,7 @@
 /**
  * Marlin release version identifier
  */
-#define SHORT_BUILD_VERSION "v2.0.6 CNC" // KS_Tweak
+#define SHORT_BUILD_VERSION "v2.0.7.1 CNC" // KS_Tweak
 //#define SHORT_BUILD_VERSION "2.0.6"
 
 /**
