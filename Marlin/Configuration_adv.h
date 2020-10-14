@@ -503,14 +503,14 @@
 /**
  * M355 Case Light on-off / brightness
  */
-//#define CASE_LIGHT_ENABLE
+#define CASE_LIGHT_ENABLE
 #if ENABLED(CASE_LIGHT_ENABLE)
-  //#define CASE_LIGHT_PIN 4                  // Override the default pin if needed
-  #define INVERT_CASE_LIGHT false             // Set true if Case Light is ON when pin is LOW
+  #define CASE_LIGHT_PIN HEATER_BED_PIN                  // Override the default pin if needed
+  #define INVERT_CASE_LIGHT true             // Set true if Case Light is ON when pin is LOW
   #define CASE_LIGHT_DEFAULT_ON true          // Set default power-up state on
   #define CASE_LIGHT_DEFAULT_BRIGHTNESS 105   // Set default power-up brightness (0-255, requires PWM pin)
   //#define CASE_LIGHT_MAX_PWM 128            // Limit pwm
-  //#define CASE_LIGHT_MENU                   // Add Case Light options to the LCD menu
+  #define CASE_LIGHT_MENU                   // Add Case Light options to the LCD menu
   //#define CASE_LIGHT_NO_BRIGHTNESS          // Disable brightness control. Enable for non-PWM lighting.
   //#define CASE_LIGHT_USE_NEOPIXEL           // Use NeoPixel LED as case light, requires NEOPIXEL_LED.
   #if ENABLED(CASE_LIGHT_USE_NEOPIXEL)
@@ -522,7 +522,7 @@
 
 // If you want endstops to stay on (by default) even when not homing
 // enable this option. Override at any time with M120, M121.
-//#define ENDSTOPS_ALWAYS_ON_DEFAULT
+#define ENDSTOPS_ALWAYS_ON_DEFAULT
 
 // @section extras
 
@@ -1119,7 +1119,7 @@
 #endif // HAS_LCD_MENU
 
 // Scroll a longer status message into view
-//#define STATUS_MESSAGE_SCROLLING
+#define STATUS_MESSAGE_SCROLLING
 
 // On the Info Screen, display XY with one decimal place when possible
 //#define LCD_DECIMAL_SMALL_XY
@@ -1166,12 +1166,12 @@
   // Enable this option and set to HIGH if your SD cards are incorrectly detected.
   //#define SD_DETECT_STATE HIGH
 
-  //#define SDCARD_READONLY                 // Read-only SD card (to save over 2K of flash)
+  #define SDCARD_READONLY                 // Read-only SD card (to save over 2K of flash)
 
   #define SD_PROCEDURE_DEPTH 1              // Increase if you need more nested M32 calls
 
   #define SD_FINISHED_STEPPERRELEASE true   // Disable steppers when SD Print is finished
-  #define SD_FINISHED_RELEASECOMMAND "M84"  // Use "M84XYE" to keep Z enabled so your bed stays in place
+  #define SD_FINISHED_RELEASECOMMAND "M84XYZ"  // Use "M84XYE" to keep Z enabled so your bed stays in place
 
   // Reverse SD sort to show "more recent" files first, according to the card's FAT.
   // Since the FAT gets out of order with usage, SDCARD_SORT_ALPHA is recommended.
@@ -1235,26 +1235,26 @@
    *  - SDSORT_CACHE_NAMES will retain the sorted file listing in RAM. (Expensive!)
    *  - SDSORT_DYNAMIC_RAM only uses RAM when the SD menu is visible. (Use with caution!)
    */
-  //#define SDCARD_SORT_ALPHA
+  #define SDCARD_SORT_ALPHA
 
   // SD Card Sorting options
   #if ENABLED(SDCARD_SORT_ALPHA)
     #define SDSORT_LIMIT       40     // Maximum number of sorted items (10-256). Costs 27 bytes each.
     #define FOLDER_SORTING     -1     // -1=above  0=none  1=below
     #define SDSORT_GCODE       false  // Allow turning sorting on/off with LCD and M34 G-code.
-    #define SDSORT_USES_RAM    false  // Pre-allocate a static array for faster pre-sorting.
+    #define SDSORT_USES_RAM    true  // Pre-allocate a static array for faster pre-sorting.
     #define SDSORT_USES_STACK  false  // Prefer the stack for pre-sorting to give back some SRAM. (Negated by next 2 options.)
-    #define SDSORT_CACHE_NAMES false  // Keep sorted items in RAM longer for speedy performance. Most expensive option.
+    #define SDSORT_CACHE_NAMES true  // Keep sorted items in RAM longer for speedy performance. Most expensive option.
     #define SDSORT_DYNAMIC_RAM false  // Use dynamic allocation (within SD menus). Least expensive option. Set SDSORT_LIMIT before use!
     #define SDSORT_CACHE_VFATS 2      // Maximum number of 13-byte VFAT entries to use for sorting.
                                       // Note: Only affects SCROLL_LONG_FILENAMES with SDSORT_CACHE_NAMES but not SDSORT_DYNAMIC_RAM.
   #endif
 
   // This allows hosts to request long names for files and folders with M33
-  //#define LONG_FILENAME_HOST_SUPPORT
+  #define LONG_FILENAME_HOST_SUPPORT
 
   // Enable this option to scroll long filenames in the SD card menu
-  //#define SCROLL_LONG_FILENAMES
+  #define SCROLL_LONG_FILENAMES
 
   // Leave the heaters on after Stop Print (not recommended!)
   //#define SD_ABORT_NO_COOLDOWN
@@ -1369,7 +1369,7 @@
   #define XYZ_HOLLOW_FRAME
 
   // Enable to save many cycles by drawing a hollow frame on Menu Screens
-  #define MENU_HOLLOW_FRAME
+  //#define MENU_HOLLOW_FRAME
 
   // A bigger font is available for edit items. Costs 3120 bytes of PROGMEM.
   // Western only. Not available for Cyrillic, Kana, Turkish, Greek, or Chinese.
@@ -1377,7 +1377,7 @@
 
   // A smaller font may be used on the Info Screen. Costs 2434 bytes of PROGMEM.
   // Western only. Not available for Cyrillic, Kana, Turkish, Greek, or Chinese.
-  //#define USE_SMALL_INFOFONT
+  #define USE_SMALL_INFOFONT
 
   // Swap the CW/CCW indicators in the graphics overlay
   //#define OVERLAY_GFX_REVERSE
@@ -1412,14 +1412,14 @@
    */
   //#define STATUS_COMBINE_HEATERS    // Use combined heater images instead of separate ones
   //#define STATUS_HOTEND_NUMBERLESS  // Use plain hotend icons instead of numbered ones (with 2+ hotends)
-  #define STATUS_HOTEND_INVERTED      // Show solid nozzle bitmaps when heating (Requires STATUS_HOTEND_ANIM)
-  #define STATUS_HOTEND_ANIM          // Use a second bitmap to indicate hotend heating
-  #define STATUS_BED_ANIM             // Use a second bitmap to indicate bed heating
-  #define STATUS_CHAMBER_ANIM         // Use a second bitmap to indicate chamber heating
-  //#define STATUS_CUTTER_ANIM        // Use a second bitmap to indicate spindle / laser active
+  //#define STATUS_HOTEND_INVERTED      // Show solid nozzle bitmaps when heating (Requires STATUS_HOTEND_ANIM)
+  //#define STATUS_HOTEND_ANIM          // Use a second bitmap to indicate hotend heating
+  //#define STATUS_BED_ANIM             // Use a second bitmap to indicate bed heating
+  //#define STATUS_CHAMBER_ANIM         // Use a second bitmap to indicate chamber heating
+  #define STATUS_CUTTER_ANIM        // Use a second bitmap to indicate spindle / laser active
   //#define STATUS_ALT_BED_BITMAP     // Use the alternative bed bitmap
   //#define STATUS_ALT_FAN_BITMAP     // Use the alternative fan bitmap
-  //#define STATUS_FAN_FRAMES 3       // :[0,1,2,3,4] Number of fan animation frames
+  #define STATUS_FAN_FRAMES 3       // :[0,1,2,3,4] Number of fan animation frames
   //#define STATUS_HEAT_PERCENT       // Show heating in a progress bar
   //#define BOOT_MARLIN_LOGO_SMALL    // Show a smaller Marlin logo on the Boot Screen (saving 399 bytes of flash)
   //#define BOOT_MARLIN_LOGO_ANIMATED // Animated Marlin logo. Costs ~‭3260 (or ~940) bytes of PROGMEM.
@@ -1653,7 +1653,7 @@
 //#define LIN_ADVANCE
 #if ENABLED(LIN_ADVANCE)
   //#define EXTRA_LIN_ADVANCE_K // Enable for second linear advance constants
-  #define LIN_ADVANCE_K 0.22    // Unit: mm compression per 1mm/s extruder speed
+  #define LIN_ADVANCE_K 0.00    // Unit: mm compression per 1mm/s extruder speed
   //#define LA_DEBUG            // If enabled, this will generate debug information output over USB.
   //#define EXPERIMENTAL_SCURVE // Enable this option to permit S-Curve Acceleration
 #endif
@@ -1798,8 +1798,8 @@
   #define MIN_ARC_SEGMENTS       24 // Minimum number of segments in a complete circle
   //#define ARC_SEGMENTS_PER_SEC 50 // Use feedrate to choose segment length (with MM_PER_ARC_SEGMENT as the minimum)
   #define N_ARC_CORRECTION       25 // Number of interpolated segments between corrections
-  //#define ARC_P_CIRCLES           // Enable the 'P' parameter to specify complete circles
-  //#define CNC_WORKSPACE_PLANES    // Allow G2/G3 to operate in XY, ZX, or YZ planes
+  #define ARC_P_CIRCLES           // Enable the 'P' parameter to specify complete circles
+  #define CNC_WORKSPACE_PLANES    // Allow G2/G3 to operate in XY, ZX, or YZ planes
   //#define SF_ARC_FIX              // Enable only if using SkeinForge with "Arc Point" fillet procedure
 #endif
 
@@ -1891,16 +1891,16 @@
 #if BOTH(SDSUPPORT, DIRECT_STEPPING)
   #define BLOCK_BUFFER_SIZE  8
 #elif ENABLED(SDSUPPORT)
-  #define BLOCK_BUFFER_SIZE 16
+  #define BLOCK_BUFFER_SIZE 32
 #else
-  #define BLOCK_BUFFER_SIZE 16
+  #define BLOCK_BUFFER_SIZE 32
 #endif
 
 // @section serial
 
 // The ASCII buffer for serial input
 #define MAX_CMD_SIZE 96
-#define BUFSIZE 4
+#define BUFSIZE 32
 
 // Transmission to Host Buffer Size
 // To save 386 bytes of PROGMEM (and TX_BUFFER_SIZE+3 bytes of RAM) set to 0.
@@ -1909,7 +1909,7 @@
 // For debug-echo: 128 bytes for the optimal speed.
 // Other output doesn't need to be that speedy.
 // :[0, 2, 4, 8, 16, 32, 64, 128, 256]
-#define TX_BUFFER_SIZE 0
+#define TX_BUFFER_SIZE 32
 
 // Host Receive Buffer Size
 // Without XON/XOFF flow control (see SERIAL_XON_XOFF below) 32 bytes should be enough.
@@ -2094,7 +2094,7 @@
                                                   // This short retract is done immediately, before parking the nozzle.
   #define FILAMENT_CHANGE_UNLOAD_FEEDRATE     10  // (mm/s) Unload filament feedrate. This can be pretty fast.
   #define FILAMENT_CHANGE_UNLOAD_ACCEL        25  // (mm/s^2) Lower acceleration may allow a faster feedrate.
-  #define FILAMENT_CHANGE_UNLOAD_LENGTH      100  // (mm) The length of filament for a complete unload.
+  #define FILAMENT_CHANGE_UNLOAD_LENGTH      400  // (mm) The length of filament for a complete unload.
                                                   //   For Bowden, the full length of the tube and nozzle.
                                                   //   For direct drive, the full length of the nozzle.
                                                   //   Set to 0 for manual unloading.
@@ -2103,7 +2103,7 @@
                                                   // 0 to disable start loading and skip to fast load only
   #define FILAMENT_CHANGE_FAST_LOAD_FEEDRATE   6  // (mm/s) Load filament feedrate. This can be pretty fast.
   #define FILAMENT_CHANGE_FAST_LOAD_ACCEL     25  // (mm/s^2) Lower acceleration may allow a faster feedrate.
-  #define FILAMENT_CHANGE_FAST_LOAD_LENGTH     0  // (mm) Load length of filament, from extruder gear to nozzle.
+  #define FILAMENT_CHANGE_FAST_LOAD_LENGTH   350  // (mm) Load length of filament, from extruder gear to nozzle.
                                                   //   For Bowden, the full length of the tube and nozzle.
                                                   //   For direct drive, the full length of the nozzle.
   //#define ADVANCED_PAUSE_CONTINUOUS_PURGE       // Purge continuously up to the purge length until interrupted.
@@ -2264,7 +2264,7 @@
   #define INTERPOLATE       true  // Interpolate X/Y/Z_MICROSTEPS to 256
 
   #if AXIS_IS_TMC(X)
-    #define X_CURRENT       800        // (mA) RMS current. Multiply by 1.414 for peak current.
+    #define X_CURRENT       580        // (mA) RMS current. Multiply by 1.414 for peak current.
     #define X_CURRENT_HOME  X_CURRENT  // (mA) RMS current for sensorless homing
     #define X_MICROSTEPS     16    // 0..256
     #define X_RSENSE          0.11
@@ -2280,7 +2280,7 @@
   #endif
 
   #if AXIS_IS_TMC(Y)
-    #define Y_CURRENT       800
+    #define Y_CURRENT       580
     #define Y_CURRENT_HOME  Y_CURRENT
     #define Y_MICROSTEPS     16
     #define Y_RSENSE          0.11
@@ -2296,7 +2296,7 @@
   #endif
 
   #if AXIS_IS_TMC(Z)
-    #define Z_CURRENT       800
+    #define Z_CURRENT       580
     #define Z_CURRENT_HOME  Z_CURRENT
     #define Z_MICROSTEPS     16
     #define Z_RSENSE          0.11
@@ -2457,7 +2457,7 @@
    */
   #define STEALTHCHOP_XY
   #define STEALTHCHOP_Z
-  #define STEALTHCHOP_E
+  //#define STEALTHCHOP_E
 
   /**
    * Optimize spreadCycle chopper parameters by using predefined parameter sets
@@ -2487,7 +2487,7 @@
    * M912 - Clear stepper driver overtemperature pre-warn condition flag.
    * M122 - Report driver parameters (Requires TMC_DEBUG)
    */
-  //#define MONITOR_DRIVER_STATUS
+  #define MONITOR_DRIVER_STATUS
 
   #if ENABLED(MONITOR_DRIVER_STATUS)
     #define CURRENT_STEP_DOWN     50  // [mA]
@@ -2584,7 +2584,7 @@
    * Enable M122 debugging command for TMC stepper drivers.
    * M122 S0/1 will enable continous reporting.
    */
-  //#define TMC_DEBUG
+  #define TMC_DEBUG
 
   /**
    * You can set your own advanced settings by filling in predefined functions.
@@ -2895,7 +2895,7 @@
  * See https://marlinfw.org/docs/configuration/laser_spindle.html for more config details.
  */
 //#define SPINDLE_FEATURE
-//#define LASER_FEATURE
+#define LASER_FEATURE
 #if EITHER(SPINDLE_FEATURE, LASER_FEATURE)
   #define SPINDLE_LASER_ACTIVE_STATE    LOW    // Set to "HIGH" if the on/off function is active HIGH
   #define SPINDLE_LASER_PWM             true   // Set to "true" if your controller supports setting the speed/power
@@ -2948,7 +2948,7 @@
     #define SPEED_POWER_INTERCEPT         0    // (%) 0-100 i.e., Minimum power percentage
     #define SPEED_POWER_MIN               0    // (%) 0-100
     #define SPEED_POWER_MAX             100    // (%) 0-100
-    #define SPEED_POWER_STARTUP          80    // (%) M3/M4 speed/power default (with no arguments)
+    #define SPEED_POWER_STARTUP          5     // (%) M3/M4 speed/power default (with no arguments)
 
     /**
      * Enable inline laser power to be handled in the planner / stepper routines.
@@ -2991,15 +2991,15 @@
       /**
        * Include laser power in G0/G1/G2/G3/G5 commands with the 'S' parameter
        */
-      //#define LASER_MOVE_POWER
+      #define LASER_MOVE_POWER
 
       #if ENABLED(LASER_MOVE_POWER)
         // Turn off the laser on G0 moves with no power parameter.
         // If a power parameter is provided, use that instead.
-        //#define LASER_MOVE_G0_OFF
+        #define LASER_MOVE_G0_OFF
 
         // Turn off the laser on G28 homing.
-        //#define LASER_MOVE_G28_OFF
+        #define LASER_MOVE_G28_OFF
       #endif
 
       /**
@@ -3034,8 +3034,10 @@
  *
  * Note: COOLANT_MIST_PIN and/or COOLANT_FLOOD_PIN must also be defined.
  */
-//#define COOLANT_CONTROL
+#define COOLANT_CONTROL
 #if ENABLED(COOLANT_CONTROL)
+  #define COOLANT_MIST_PIN BEEPER_PIN // KS_Tweak
+  #define COOLANT_FLOOD_PIN BTN_ENC // KS_Tweak
   #define COOLANT_MIST                // Enable if mist coolant is present
   #define COOLANT_FLOOD               // Enable if flood coolant is present
   #define COOLANT_MIST_INVERT  false  // Set "true" if the on/off function is reversed
