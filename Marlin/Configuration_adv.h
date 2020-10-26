@@ -2896,6 +2896,10 @@
  */
 //#define SPINDLE_FEATURE
 #define LASER_FEATURE
+
+#define SPINDLE_LASER_ENA_PIN BTN_EN1
+#define SPINDLE_LASER_PWM_PIN HEATER_0_PIN
+
 #if EITHER(SPINDLE_FEATURE, LASER_FEATURE)
   #define SPINDLE_LASER_ACTIVE_STATE    LOW    // Set to "HIGH" if the on/off function is active HIGH
   #define SPINDLE_LASER_PWM             true   // Set to "true" if your controller supports setting the speed/power
