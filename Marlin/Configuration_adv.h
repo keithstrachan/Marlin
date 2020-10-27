@@ -503,7 +503,7 @@
 /**
  * M355 Case Light on-off / brightness
  */
-#define CASE_LIGHT_ENABLE // KS_Tweak
+//#define CASE_LIGHT_ENABLE // KS_Tweak
 #if ENABLED(CASE_LIGHT_ENABLE)
   //#define CASE_LIGHT_PIN 4                  // Override the default pin if needed
   #define INVERT_CASE_LIGHT false             // Set true if Case Light is ON when pin is LOW
@@ -2901,7 +2901,7 @@
   #define SPINDLE_LASER_PWM             true   // Set to "true" if your controller supports setting the speed/power
   #define SPINDLE_LASER_PWM_INVERT      false  // Set to "true" if the speed/power goes up when you want it to go slower
 
-  #define SPINDLE_LASER_FREQUENCY       2500   // (Hz) Spindle/laser frequency (only on supported HALs: AVR and LPC)
+  //#define SPINDLE_LASER_FREQUENCY       2500   // (Hz) Spindle/laser frequency (only on supported HALs: AVR and LPC)
 
   /**
    * Speed / Power can be set ('M3 S') and displayed in terms of:
@@ -3037,7 +3037,7 @@
 #define COOLANT_CONTROL // KS_Tweak
 #if ENABLED(COOLANT_CONTROL)
   //#define COOLANT_MIST // KS_Tweak                // Enable if mist coolant is present
-  #define COOLANT_FLOOD_PIN RAMPS_D8_PIN // KS_Tweak
+  #define COOLANT_FLOOD_PIN HEATER_BED_PIN // KS_Tweak
   #define COOLANT_FLOOD               // Enable if flood coolant is present
   #define COOLANT_MIST_INVERT  false  // Set "true" if the on/off function is reversed
   #define COOLANT_FLOOD_INVERT false  // Set "true" if the on/off function is reversed
