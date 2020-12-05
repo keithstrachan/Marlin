@@ -21,9 +21,7 @@
  */
 #pragma once
 
-// #ifndef STM32F767xx
-//#ifndef NUCLEO_F767ZI
-#if NOT_TARGET(STM32F767, STM32F767xx, NUCLEO_F767ZI)
+#ifndef STM32F767xx
   #error "Oops! Select an STM32F767 environment"
 #endif
 
