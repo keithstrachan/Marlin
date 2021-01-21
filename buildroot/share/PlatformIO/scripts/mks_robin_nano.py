@@ -15,14 +15,14 @@ for i, flag in enumerate(env["LINKFLAGS"]):
         env["LINKFLAGS"][i + 1] = custom_ld_script
 
 
-# Encrypt ${PROGNAME}.bin and save it as 'robin_nano35.bin'
+# Encrypt ${PROGNAME}.bin and save it as 'robin_nano.bin'
 def encrypt(source, target, env):
     import sys
 
     key = [0xA3, 0xBD, 0xAD, 0x0D, 0x41, 0x11, 0xBB, 0x8D, 0xDC, 0x80, 0x2D, 0xD0, 0xD2, 0xC4, 0x9B, 0x1E, 0x26, 0xEB, 0xE3, 0x33, 0x4A, 0x15, 0xE4, 0x0A, 0xB3, 0xB1, 0x3C, 0x93, 0xBB, 0xAF, 0xF7, 0x3E]
 
     firmware = open(target[0].path, "rb")
-    robin = open(target[0].dir.path +'/robin_nano35.bin', "wb")
+    robin = open(target[0].dir.path +'/robin_nano.bin', "wb")
     length = os.path.getsize(target[0].path)
     position = 0
     try:
