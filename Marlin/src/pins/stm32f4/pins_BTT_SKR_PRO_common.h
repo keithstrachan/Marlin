@@ -21,9 +21,7 @@
  */
 #pragma once
 
-#if NOT_TARGET(STM32F4)
-  #error "Oops! Select an STM32F4 board in 'Tools > Board.'"
-#endif
+#include "env_validate.h"
 
 // BigTreeTech driver expansion module https://bit.ly/3ptRRoj
 //#define BTT_MOTOR_EXPANSION
@@ -243,7 +241,7 @@
 #define HEATER_BED_PIN                      PD12  // Hotbed
 #define FAN_PIN                             PC8   // Fan0
 #define FAN1_PIN                            PE5   // Fan1
-#define FAN2_PIN                            PE6
+#define FAN2_PIN                            PE6   // Fan2
 
 #ifndef E0_AUTO_FAN_PIN
   #define E0_AUTO_FAN_PIN               FAN1_PIN
