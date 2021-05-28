@@ -75,7 +75,7 @@
   #define SERVO_DELAY { 50 }
 #endif
 
-#if EXTRUDERS == 0
+#if !HAS_EXTRUDERS
   #define NO_VOLUMETRICS
   #undef TEMP_SENSOR_0
   #undef TEMP_SENSOR_1
@@ -103,6 +103,9 @@
   #undef THERMAL_PROTECTION_PERIOD
   #undef WATCH_TEMP_PERIOD
   #undef SHOW_TEMP_ADC_VALUES
+  #undef LCD_SHOW_E_TOTAL
+  #undef MANUAL_E_MOVES_RELATIVE
+  #undef STEALTHCHOP_E
 #endif
 
 #if TEMP_SENSOR_BED == 0
@@ -245,7 +248,7 @@
   #define _CUTTER_POWER_PERCENT 2
   #define _CUTTER_POWER_RPM     3
   #define _CUTTER_POWER(V)      _CAT(_CUTTER_POWER_, V)
-  #define CUTTER_UNIT_IS(V)    (_CUTTER_POWER(CUTTER_POWER_UNIT)    == _CUTTER_POWER(V))
+  #define CUTTER_UNIT_IS(V)    (_CUTTER_POWER(CUTTER_POWER_UNIT) == _CUTTER_POWER(V))
 #endif
 
 // Add features that need hardware PWM here
@@ -370,19 +373,14 @@
   #endif
 #endif
 
-// If platform requires early initialization of watchdog to properly boot
-#if ENABLED(USE_WATCHDOG) && defined(ARDUINO_ARCH_SAM)
-  #define EARLY_WATCHDOG 1
-#endif
-
 // Full Touch Screen needs 'tft/xpt2046'
-#if EITHER(TOUCH_SCREEN, HAS_TFT_LVGL_UI)
+#if EITHER(TFT_TOUCH_DEVICE_XPT2046, HAS_TFT_LVGL_UI)
   #define HAS_TFT_XPT2046 1
 #endif
 
 // Touch Screen or "Touch Buttons" need XPT2046 pins
 // but they use different components
-#if EITHER(HAS_TFT_XPT2046, HAS_TOUCH_BUTTONS)
+#if HAS_TFT_XPT2046 || HAS_RES_TOUCH_BUTTONS
   #define NEED_TOUCH_PINS 1
 #endif
 
@@ -394,6 +392,12 @@
 // Poll-based jogging for joystick and other devices
 #if ENABLED(JOYSTICK)
   #define POLL_JOG
+#endif
+
+#if X2_HOME_DIR > 0
+  #define X2_HOME_TO_MAX 1
+#elif X2_HOME_DIR < 0
+  #define X2_HOME_TO_MIN 1
 #endif
 
 #ifndef HOMING_BUMP_MM
@@ -481,6 +485,23 @@
   #endif
 #endif
 
+// Remove unused STEALTHCHOP flags
+#if LINEAR_AXES < 6
+  #undef STEALTHCHOP_K
+  #if LINEAR_AXES < 5
+    #undef STEALTHCHOP_J
+    #if LINEAR_AXES < 4
+      #undef STEALTHCHOP_I
+      #if LINEAR_AXES < 3
+        #undef STEALTHCHOP_Z
+        #if LINEAR_AXES < 2
+          #undef STEALTHCHOP_Y
+        #endif
+      #endif
+    #endif
+  #endif
+#endif
+
 //
 // SD Card connection methods
 // Defined here so pins and sanity checks can use them
@@ -498,12 +519,9 @@
 // Power Monitor sensors
 #if EITHER(POWER_MONITOR_CURRENT, POWER_MONITOR_VOLTAGE)
   #define HAS_POWER_MONITOR 1
-#endif
-#if ENABLED(POWER_MONITOR_CURRENT) && defined(POWER_MONITOR_FIXED_VOLTAGE)
-  #define HAS_POWER_MONITOR_VREF 1
-#endif
-#if BOTH(HAS_POWER_MONITOR_VREF, POWER_MONITOR_CURRENT)
-  #define HAS_POWER_MONITOR_WATTS 1
+  #if ENABLED(POWER_MONITOR_CURRENT) && (ENABLED(POWER_MONITOR_VOLTAGE) || defined(POWER_MONITOR_FIXED_VOLTAGE))
+    #define HAS_POWER_MONITOR_WATTS 1
+  #endif
 #endif
 
 // Flag if an EEPROM type is pre-selected

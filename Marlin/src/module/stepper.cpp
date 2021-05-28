@@ -179,6 +179,10 @@ bool Stepper::abort_current_block;
 uint32_t Stepper::acceleration_time, Stepper::deceleration_time;
 uint8_t Stepper::steps_per_isr;
 
+#if HAS_FREEZE_PIN
+  bool Stepper::frozen; // = false
+#endif
+
 IF_DISABLED(ADAPTIVE_STEP_SMOOTHING, constexpr) uint8_t Stepper::oversampling_factor;
 
 xyze_long_t Stepper::delta_error{0};
@@ -255,13 +259,13 @@ xyze_int8_t Stepper::count_direction{0};
 
 #define DUAL_ENDSTOP_APPLY_STEP(A,V)                                                                                        \
   if (separate_multi_axis) {                                                                                                \
-    if (A##_HOME_DIR < 0) {                                                                                                 \
-      if (!(TEST(endstops.state(), A##_MIN) && count_direction[_AXIS(A)] < 0) && !locked_##A##_motor) A##_STEP_WRITE(V);    \
-      if (!(TEST(endstops.state(), A##2_MIN) && count_direction[_AXIS(A)] < 0) && !locked_##A##2_motor) A##2_STEP_WRITE(V); \
+    if (A##_HOME_TO_MIN) {                                                                                                  \
+      if (TERN0(HAS_##A##_MIN, !(TEST(endstops.state(), A##_MIN) && count_direction[_AXIS(A)] < 0) && !locked_##A##_motor)) A##_STEP_WRITE(V);     \
+      if (TERN0(HAS_##A##2_MIN, !(TEST(endstops.state(), A##2_MIN) && count_direction[_AXIS(A)] < 0) && !locked_##A##2_motor)) A##2_STEP_WRITE(V); \
     }                                                                                                                       \
     else {                                                                                                                  \
-      if (!(TEST(endstops.state(), A##_MAX) && count_direction[_AXIS(A)] > 0) && !locked_##A##_motor) A##_STEP_WRITE(V);    \
-      if (!(TEST(endstops.state(), A##2_MAX) && count_direction[_AXIS(A)] > 0) && !locked_##A##2_motor) A##2_STEP_WRITE(V); \
+      if (TERN0(HAS_##A##_MAX, !(TEST(endstops.state(), A##_MAX) && count_direction[_AXIS(A)] > 0) && !locked_##A##_motor)) A##_STEP_WRITE(V);     \
+      if (TERN0(HAS_##A##2_MAX, !(TEST(endstops.state(), A##2_MAX) && count_direction[_AXIS(A)] > 0) && !locked_##A##2_motor)) A##2_STEP_WRITE(V); \
     }                                                                                                                       \
   }                                                                                                                         \
   else {                                                                                                                    \
@@ -281,7 +285,7 @@ xyze_int8_t Stepper::count_direction{0};
 
 #define TRIPLE_ENDSTOP_APPLY_STEP(A,V)                                                                                      \
   if (separate_multi_axis) {                                                                                                \
-    if (A##_HOME_DIR < 0) {                                                                                                 \
+    if (A##_HOME_TO_MIN) {                                                                                                  \
       if (!(TEST(endstops.state(), A##_MIN) && count_direction[_AXIS(A)] < 0) && !locked_##A##_motor) A##_STEP_WRITE(V);    \
       if (!(TEST(endstops.state(), A##2_MIN) && count_direction[_AXIS(A)] < 0) && !locked_##A##2_motor) A##2_STEP_WRITE(V); \
       if (!(TEST(endstops.state(), A##3_MIN) && count_direction[_AXIS(A)] < 0) && !locked_##A##3_motor) A##3_STEP_WRITE(V); \
@@ -312,7 +316,7 @@ xyze_int8_t Stepper::count_direction{0};
 
 #define QUAD_ENDSTOP_APPLY_STEP(A,V)                                                                                        \
   if (separate_multi_axis) {                                                                                                \
-    if (A##_HOME_DIR < 0) {                                                                                                 \
+    if (A##_HOME_TO_MIN) {                                                                                                  \
       if (!(TEST(endstops.state(), A##_MIN) && count_direction[_AXIS(A)] < 0) && !locked_##A##_motor) A##_STEP_WRITE(V);    \
       if (!(TEST(endstops.state(), A##2_MIN) && count_direction[_AXIS(A)] < 0) && !locked_##A##2_motor) A##2_STEP_WRITE(V); \
       if (!(TEST(endstops.state(), A##3_MIN) && count_direction[_AXIS(A)] < 0) && !locked_##A##3_motor) A##3_STEP_WRITE(V); \
@@ -494,7 +498,7 @@ void Stepper::set_directions() {
         MIXER_STEPPER_LOOP(j) NORM_E_DIR(j);
         count_direction.e = 1;
       }
-    #else
+    #elif HAS_EXTRUDERS
       if (motor_direction(E_AXIS)) {
         REV_E_DIR(stepper_extruder);
         count_direction.e = -1;
@@ -1531,6 +1535,9 @@ void Stepper::pulse_phase_isr() {
   // If there is no current block, do nothing
   if (!current_block) return;
 
+  // Skipping step processing causes motion to freeze
+  if (TERN0(HAS_FREEZE_PIN, frozen)) return;
+
   // Count of pending loops and events for this iteration
   const uint32_t pending_events = step_event_count - step_events_completed;
   uint8_t events_to_do = _MIN(pending_events, steps_per_isr);
@@ -1620,7 +1627,7 @@ void Stepper::pulse_phase_isr() {
           PAGE_PULSE_PREP(X);
           PAGE_PULSE_PREP(Y);
           PAGE_PULSE_PREP(Z);
-          PAGE_PULSE_PREP(E);
+          TERN_(HAS_EXTRUDERS, PAGE_PULSE_PREP(E));
 
           page_step_state.segment_steps++;
 
@@ -1653,7 +1660,7 @@ void Stepper::pulse_phase_isr() {
           PAGE_PULSE_PREP(X);
           PAGE_PULSE_PREP(Y);
           PAGE_PULSE_PREP(Z);
-          PAGE_PULSE_PREP(E);
+          TERN_(HAS_EXTRUDERS, PAGE_PULSE_PREP(E));
 
           page_step_state.segment_steps++;
 
@@ -1697,12 +1704,12 @@ void Stepper::pulse_phase_isr() {
       #if EITHER(LIN_ADVANCE, MIXING_EXTRUDER)
         delta_error.e += advance_dividend.e;
         if (delta_error.e >= 0) {
-          count_position.e += count_direction.e;
           #if ENABLED(LIN_ADVANCE)
             delta_error.e -= advance_divisor;
             // Don't step E here - But remember the number of steps to perform
             motor_direction(E_AXIS) ? --LA_steps : ++LA_steps;
           #else
+            count_position.e += count_direction.e;
             step_needed.e = true;
           #endif
         }
@@ -2096,13 +2103,15 @@ uint32_t Stepper::block_phase_isr() {
       #endif
 
       uint8_t axis_bits = 0;
-      if (X_MOVE_TEST) SBI(axis_bits, A_AXIS);
-      if (Y_MOVE_TEST) SBI(axis_bits, B_AXIS);
-      if (Z_MOVE_TEST) SBI(axis_bits, C_AXIS);
-      //if (!!current_block->steps.e) SBI(axis_bits, E_AXIS);
-      //if (!!current_block->steps.a) SBI(axis_bits, X_HEAD);
-      //if (!!current_block->steps.b) SBI(axis_bits, Y_HEAD);
-      //if (!!current_block->steps.c) SBI(axis_bits, Z_HEAD);
+      LINEAR_AXIS_CODE(
+        if (X_MOVE_TEST) SBI(axis_bits, A_AXIS),
+        if (Y_MOVE_TEST) SBI(axis_bits, B_AXIS),
+        if (Z_MOVE_TEST) SBI(axis_bits, C_AXIS)
+      );
+      //if (current_block->steps.e) SBI(axis_bits, E_AXIS);
+      //if (current_block->steps.a) SBI(axis_bits, X_HEAD);
+      //if (current_block->steps.b) SBI(axis_bits, Y_HEAD);
+      //if (current_block->steps.c) SBI(axis_bits, Z_HEAD);
       axis_did_move = axis_bits;
 
       // No acceleration / deceleration time elapsed so far
@@ -2283,15 +2292,23 @@ uint32_t Stepper::block_phase_isr() {
     #if ENABLED(MIXING_EXTRUDER)
       // We don't know which steppers will be stepped because LA loop follows,
       // with potentially multiple steps. Set all.
-      if (LA_steps > 0)
+      if (LA_steps > 0) {
         MIXER_STEPPER_LOOP(j) NORM_E_DIR(j);
-      else if (LA_steps < 0)
+        count_direction.e = 1;
+      }
+      else if (LA_steps < 0) {
         MIXER_STEPPER_LOOP(j) REV_E_DIR(j);
+        count_direction.e = -1;
+      }
     #else
-      if (LA_steps > 0)
+      if (LA_steps > 0) {
         NORM_E_DIR(stepper_extruder);
-      else if (LA_steps < 0)
+        count_direction.e = 1;
+      }
+      else if (LA_steps < 0) {
         REV_E_DIR(stepper_extruder);
+        count_direction.e = -1;
+      }
     #endif
 
     DIR_WAIT_AFTER();
@@ -2311,6 +2328,8 @@ uint32_t Stepper::block_phase_isr() {
         else
           AWAIT_LOW_PULSE();
       #endif
+
+      count_position.e += count_direction.e;
 
       // Set the STEP pulse ON
       #if ENABLED(MIXING_EXTRUDER)
@@ -2589,9 +2608,13 @@ void Stepper::init() {
   #endif
 
   // Init direction bits for first moves
-  set_directions((INVERT_X_DIR ? _BV(X_AXIS) : 0)
-               | (INVERT_Y_DIR ? _BV(Y_AXIS) : 0)
-               | (INVERT_Z_DIR ? _BV(Z_AXIS) : 0));
+  set_directions(0
+    LINEAR_AXIS_GANG(
+      | TERN0(INVERT_X_DIR, _BV(X_AXIS)),
+      | TERN0(INVERT_Y_DIR, _BV(Y_AXIS)),
+      | TERN0(INVERT_Z_DIR, _BV(Z_AXIS))
+    )
+  );
 
   #if HAS_MOTOR_CURRENT_SPI || HAS_MOTOR_CURRENT_PWM
     initialized = true;
@@ -2608,7 +2631,9 @@ void Stepper::init() {
  * This allows get_axis_position_mm to correctly
  * derive the current XYZ position later on.
  */
-void Stepper::_set_position(const int32_t &a, const int32_t &b, const int32_t &c, const int32_t &e) {
+void Stepper::_set_position(
+  LOGICAL_AXIS_LIST(const int32_t &e, const int32_t &a, const int32_t &b, const int32_t &c)
+) {
   #if CORE_IS_XY
     // corexy positioning
     // these equations follow the form of the dA and dB equations on https://www.corexy.com/theory.html
@@ -2623,9 +2648,9 @@ void Stepper::_set_position(const int32_t &a, const int32_t &b, const int32_t &c
     count_position.set(a - b, b, c);
   #else
     // default non-h-bot planning
-    count_position.set(a, b, c);
+    count_position.set(LINEAR_AXIS_LIST(a, b, c));
   #endif
-  count_position.e = e;
+  TERN_(HAS_EXTRUDERS, count_position.e = e);
 }
 
 /**
@@ -2648,10 +2673,13 @@ int32_t Stepper::position(const AxisEnum axis) {
 }
 
 // Set the current position in steps
-void Stepper::set_position(const int32_t &a, const int32_t &b, const int32_t &c, const int32_t &e) {
+//TODO: Test for LINEAR_AXES >= 4
+void Stepper::set_position(
+  LOGICAL_AXIS_LIST(const int32_t &e, const int32_t &a, const int32_t &b, const int32_t &c)
+) {
   planner.synchronize();
   const bool was_enabled = suspend();
-  _set_position(a, b, c, e);
+  _set_position(LOGICAL_AXIS_LIST(e, a, b, c));
   if (was_enabled) wake_up();
 }
 
@@ -2726,10 +2754,11 @@ void Stepper::report_a_position(const xyz_long_t &pos) {
     SERIAL_ECHOPAIR_P(PSTR(STR_COUNT_X), pos.x, SP_Y_LBL, pos.y);
   #endif
   #if ANY(CORE_IS_XZ, CORE_IS_YZ, DELTA)
-    SERIAL_ECHOLNPAIR(" C:", pos.z);
-  #else
-    SERIAL_ECHOLNPAIR_P(SP_Z_LBL, pos.z);
+    SERIAL_ECHOPAIR(" C:", pos.z);
+  #elif LINEAR_AXES >= 3
+    SERIAL_ECHOPAIR_P(SP_Z_LBL, pos.z);
   #endif
+  SERIAL_EOL();
 }
 
 void Stepper::report_positions() {
@@ -2886,7 +2915,7 @@ void Stepper::report_positions() {
 
           DIR_WAIT_BEFORE();
 
-          const xyz_byte_t old_dir = { X_DIR_READ(), Y_DIR_READ(), Z_DIR_READ() };
+          const xyz_byte_t old_dir = LINEAR_AXIS_ARRAY(X_DIR_READ(), Y_DIR_READ(), Z_DIR_READ());
 
           X_DIR_WRITE(INVERT_X_DIR ^ z_direction);
           Y_DIR_WRITE(INVERT_Y_DIR ^ z_direction);
